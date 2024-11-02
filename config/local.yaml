@@ -1,3 +1,0 @@
-env: "local"
-graphql:
-  port: 44045

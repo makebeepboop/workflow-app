@@ -4,15 +4,28 @@ import (
 	"flag"
 	"github.com/ilyakaznacheev/cleanenv"
 	"os"
+	"time"
 )
 
 type Config struct {
-	Env     string `yaml:"env" env-required:"true"`
-	Graphql GraphqlConfig
+	Env     string        `yaml:"env" env-required:"true"`
+	Graphql GraphqlConfig `yaml:"graphql"`
+	Clients ClientsConfig `yaml:"clients"`
 }
 
 type GraphqlConfig struct {
 	Port int `yaml:"port" env-required:"true"`
+}
+
+type Client struct {
+	Address      string        `yaml:"address" env-required:"true"`
+	Timeout      time.Duration `yaml:"timeout" env-required:"true"`
+	RetriesCount int           `yaml:"retries_count" env-required:"true"`
+	// Insecure     bool   `yaml:"insecure" env-required:"true"`
+}
+
+type ClientsConfig struct {
+	Task Client `yaml:"task"`
 }
 
 func MustLoad() *Config {

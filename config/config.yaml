@@ -1,0 +1,8 @@
+env: "local"
+graphql:
+  port: 44045
+clients:
+  task:
+    address: "localhost:44044"
+    timeout: 5s
+    retries_count: 10

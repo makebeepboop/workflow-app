@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	taskpb "github.com/makebeepboop/protos/gen/go/task"
+	taskgrpc "github.com/makebeepboop/workflow-app/internal/clients/task/grpc"
 	"github.com/makebeepboop/workflow-app/internal/config"
+	"github.com/makebeepboop/workflow-app/internal/lib/sl"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -26,6 +31,25 @@ func main() {
 		slog.Int("port", cfg.Graphql.Port),
 	)
 
+	taskClient, err := taskgrpc.New(
+		context.Background(),
+		log,
+		cfg.Clients.Task.Address,
+		cfg.Clients.Task.Timeout,
+		cfg.Clients.Task.RetriesCount,
+	)
+	if err != nil {
+		log.Error("failed to init task client", sl.Err(err))
+		os.Exit(1)
+	}
+
+	// tests
+	res, err := taskClient.Api.Status(context.Background(), &taskpb.StatusRequest{TaskId: 1})
+	if err != nil {
+		log.Error("failed to call api", sl.Err(err))
+	}
+
+	fmt.Println(res.GetStatus())
 	//application := app.New(log, cfg.Graphql.Port)
 	//go application.Graphql.MustRun()
 
